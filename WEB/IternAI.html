@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GovAI Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom styles to override or extend Tailwind */
+    body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f4f8; 
+  position: relative;
+}
+.blurry-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e0f2f1 0%, #4959fe 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: -1;
+}
+    #background-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-10deg);
+      font-size: 15vw; /* Large and responsive */
+      font-weight: 900;
+      color: rgba(76, 175, 80, 0.05); /* Very transparent green */
+      pointer-events: none;
+      user-select: none;
+      animation: pulsate 10s infinite ease-in-out;
+      z-index: -2;
+    }
+    .chat-container {
+      max-width: 600px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 2rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      margin: auto;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      animation: unfoldAnimation 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      height: 5rem; 
+      opacity: 0; 
+    }
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background-color: transparent;
+    }
+    .message-bubble {
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 1.5rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .user-message {
+      background-color: #4CAF50;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 0.75rem;
+    }
+    .bot-message {
+      background-color: #E8F5E9;
+      color: #333;
+      margin-right: auto;
+      border-bottom-left-radius: 0.75rem;
+    }
+    .input-area {
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+    .input-area input {
+      flex: 1;
+      padding: 0.875rem 1.25rem;
+      border-radius: 9999px;
+      border: 2px solid #d1d5db;
+      background-color: #f9fafb;
+      transition: all 0.2s ease-in-out;
+    }
+    .input-area input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+    .input-area button {
+      padding: 0.875rem;
+      border-radius: 9999px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .input-area button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .input-area button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+    .loading-dots {
+      display: inline-flex;
+      gap: 0.25rem;
+    }
+    .loading-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #9ccc65;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+    .loading-dot:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+    .loading-dot:nth-child(3) {
+      animation-delay: -0.6s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulsate {
+      0% { transform: translate(-50%, -50%) scale(1) rotate(-10deg); opacity: 0.05; }
+      50% { transform: translate(-50%, -50%) scale(1.05) rotate(-10deg); opacity: 0.07; }
+      100% { transform: translate(-50%, -50%) scale(1) rotate(-10deg); opacity: 0.05; }
+    }
+    @keyframes unfoldAnimation {
+        0% {
+            height: 5rem;
+            opacity: 0;
+            transform: scaleY(0.95);
+        }
+        50% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        100% {
+            height: 90vh;
+            opacity: 1;
+        }
+    }
+    @keyframes fadeInAndScaleUp {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4 min-h-screen">
+  <div class="blurry-background"></div>
+  <div id="background-text">Internity</div>
+
+  <div class="chat-container">
+    
+    <div class="p-5 bg-white border-b border-gray-200 rounded-t-2xl">
+      <h1 class="text-2xl font-bold text-gray-800 text-center">InternAI</h1>
+      <p class="text-sm text-gray-800 text-center mt-1">Talk to me in any language!</p>
+    </div>
+
+    
+    <div id="chat-history" class="chat-history flex flex-col space-y-3">
+      <div class="message-bubble bot-message self-start shadow">
+        Hello! I am an AI assistant. Type or use the microphone to talk.
+      </div>
+    </div>
+
+    
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message here..." class="focus:outline-none focus:ring-2">
+     
+      <button id="voice-button" title="Start/Stop Voice Input" class="bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg">
+        <i class="fas fa-microphone"></i>
+      </button>
+      <button id="send-button" title="Send Message" class="bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+   
+    const apiKey = "AIzaSyD69gIV3CHrEiQxcHnBAyXhxMz6QQVO7I8";
+
+    
+    const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+  
+    const chatHistory = document.getElementById('chat-history');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const voiceButton = document.getElementById('voice-button');
+
+    
+    let chat = [];
+    let isVoiceMode = false;
+    let speechRecognition;
+    let currentController = null;
+    let typingInterval = null; 
+
+    
+    const addMessage = (text, sender) => {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message-bubble', 'shadow', sender === 'user' ? 'user-message' : 'bot-message');
+      messageDiv.textContent = text;
+      chatHistory.appendChild(messageDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+      return messageDiv;
+    };
+
+    const showLoading = () => {
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'loading';
+      loadingDiv.classList.add('message-bubble', 'bot-message', 'self-start', 'loading-dots', 'shadow');
+      loadingDiv.innerHTML = '<span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span>';
+      chatHistory.appendChild(loadingDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    };
+
+    const hideLoading = () => {
+      const loadingDiv = document.getElementById('loading');
+      if (loadingDiv) loadingDiv.remove();
+    };
+
+    const showTypingEffect = (element, text, delay = 50) => {
+      // Clean up the text by removing all asterisks
+      const cleanedText = text.replace(/\*/g, '');
+      const words = cleanedText.split(' ');
+      let wordIndex = 0;
+      typingInterval = setInterval(() => {
+        if (wordIndex < words.length) {
+          element.textContent += words[wordIndex] + ' ';
+          wordIndex++;
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+        } else {
+          clearInterval(typingInterval);
+          // Ensure the full text is there in case of any floating point error
+          element.textContent = cleanedText;
+          resetSendButton();
+        }
+      }, delay);
+    };
+
+    const showVoiceModeBox = () => {
+      let voiceBox = document.getElementById('voice-mode-box');
+      if (!voiceBox) {
+        voiceBox = document.createElement('div');
+        voiceBox.id = 'voice-mode-box';
+        voiceBox.classList.add('message-bubble', 'bot-message', 'self-start', 'shadow');
+        voiceBox.textContent = '🎤 Voice mode active. Speak now...';
+        chatHistory.appendChild(voiceBox);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+    };
+
+    const hideVoiceModeBox = () => {
+      const voiceBox = document.getElementById('voice-mode-box');
+      if (voiceBox) voiceBox.remove();
+    };
+
+    const resetSendButton = () => {
+      sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+      sendButton.className = 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg p-3 rounded-full transition transform hover:scale-105';
+      sendButton.onclick = sendMessage;
+    };
+    
+    const getResponse = async (userMessage) => {
+      // Abort any previous request
+      if (currentController) {
+        currentController.abort();
+        clearInterval(typingInterval);
+        hideLoading();
+        // The resetSendButton() call is moved to the stop-button's click event.
+      }
+
+      currentController = new AbortController();
+      const signal = currentController.signal;
+      
+      showLoading();
+      
+      // Add a system instruction to match the user's conversational style.
+      const systemInstruction = {
+        parts: [{ text: "Respond to the user in the same informal, casual, and mixed-language style they use, like they are a friend." }]
+      };
+      
+      chat.push({ role: "user", parts: [{ text: userMessage }] });
+      
+      const payload = { 
+        contents: chat, 
+        generationConfig: { temperature: 0.7, topP: 0.95, topK: 40 },
+        tools: [{ "google_search": {} }],
+        systemInstruction: systemInstruction
+      };
+      
+      try {
+        const response = await fetch(textApiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: signal
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+        const botResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't respond.";
+        
+        hideLoading();
+        const botMessageElement = addMessage('', 'bot');
+        showTypingEffect(botMessageElement, botResponse);
+        chat.push({ role: "model", parts: [{ text: botResponse }] });
+
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('Fetch aborted');
+          hideLoading();
+        } else {
+          console.error('Error fetching API:', error);
+          hideLoading();
+          addMessage("I am currently experiencing an issue. Please try again later.", 'bot');
+        }
+        resetSendButton();
+      }
+    };
+
+    const sendMessage = () => {
+      const message = userInput.value.trim();
+      if (message === '') return;
+      
+      // Change send button to stop button
+      sendButton.innerHTML = '<i class="fas fa-stop"></i>';
+      sendButton.className = 'bg-red-500 text-white shadow-lg p-3 rounded-full transition transform hover:scale-105';
+      sendButton.onclick = () => {
+          if (currentController) {
+              currentController.abort();
+              clearInterval(typingInterval);
+              hideLoading();
+              resetSendButton();
+          }
+      };
+
+      addMessage(message, 'user');
+      userInput.value = '';
+      getResponse(message);
+    };
+
+    // --- Speech Recognition ---
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      speechRecognition = new SpeechRecognition();
+      speechRecognition.interimResults = false;
+      speechRecognition.continuous = true;
+
+      speechRecognition.onresult = (event) => {
+        // Abort any previous response before processing new voice input
+        if (currentController) {
+          currentController.abort();
+          clearInterval(typingInterval);
+          hideLoading();
+          resetSendButton();
+        }
+        
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        if (transcript.length > 0) {
+          addMessage(transcript, 'user');
+          getResponse(transcript);
+        }
+      };
+
+      speechRecognition.onend = () => {
+        if (isVoiceMode) speechRecognition.start();
+      };
+
+      voiceButton.addEventListener('click', () => {
+        if (isVoiceMode) {
+          isVoiceMode = false;
+          speechRecognition.stop();
+          hideVoiceModeBox();
+          voiceButton.innerHTML = '<i class="fas fa-microphone"></i>';
+          voiceButton.className = 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg p-3 rounded-full transition transform hover:scale-105';
+          sendButton.disabled = false;
+          userInput.disabled = false;
+        } else {
+          isVoiceMode = true;
+          speechRecognition.start();
+          showVoiceModeBox();
+          voiceButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+          voiceButton.className = 'bg-red-500 text-white shadow-lg p-3 rounded-full transition transform hover:scale-105';
+          sendButton.disabled = true;
+          userInput.disabled = true;
+        }
+      });
+    } else {
+      voiceButton.style.display = 'none';
+      console.warn('Speech Recognition is not supported by this browser.');
+    }
+
+    // --- Event Listeners ---
+    sendButton.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>

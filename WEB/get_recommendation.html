@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Recommendations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #636FFF 100%);
+            color: #1b5e20;
+        }
+
+        .outer-box {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            color: #4a5568;
+        }
+
+        .internship-card {
+            background: linear-gradient(135deg, #cce0cc, #ffffff);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: #1b5e20;
+        }
+
+        .internship-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-button {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="outer-box w-full max-w-6xl p-8 md:p-10 text-center relative">
+        
+        <!-- Back Button -->
+        <a href="./find_internship.html" class="absolute top-6 left-6 text-gray-500 hover:text-[#4caf50] transition-colors duration-200">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900 mb-2">
+                Your Top Internship Recommendations
+            </h1>
+            <p class="text-lg text-gray-700">
+                Here are the internships we found that match your profile.
+            </p>
+        </div>
+
+        <!-- Internship Cards Container -->
+        <div id="internship-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards will be populated here by JavaScript -->
+        </div>
+
+        <!-- No Recommendations Found Message -->
+        <div id="no-recommendations" class="hidden text-center text-lg text-gray-600 p-8">
+            <p class="mb-4">No internships found matching your criteria. Please try again with different selections.</p>
+        </div>
+
+        <button id="getAccurateRecommendation" class="w-full md:w-auto py-3 px-8 rounded-full font-bold cta-button mt-10 hidden">
+    Get Accurate Recommendation
+</button>
+
+    </div>
+
+    <!-- Modal for Internship Overview -->
+    <div id="overview-modal" class="hidden modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Internship Overview</h2>
+            <p id="overview-content" class="text-gray-700 text-left"></p>
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Dummy JSON data for demonstration purposes
+        // const mockRecommendations = [
+        //     {
+        //         "Internship ID": "INT1201",
+        //         "Sector": "Technology",
+        //         "Location": "Bengaluru",
+        //         "Education": "BTech",
+        //         "Skills": ["Python", "Machine Learning", "SQL"],
+        //         "Interests": ["AI/ML", "Coding"],
+        //         "InternshipOverview": "This internship focuses on developing and deploying machine learning models for a large-scale data platform. You will work with a team of data scientists and engineers to build solutions that impact thousands of users.",
+        //         "Duration": "3 months",
+        //         "Stipend": "₹25,000/month",
+        //         "Mode": "Hybrid"
+        //     },
+        //     {
+        //         "Internship ID": "INT1202",
+        //         "Sector": "Healthcare",
+        //         "Location": "Mumbai",
+        //         "Education": "BSc",
+        //         "Skills": ["Data Analysis", "Communication"],
+        //         "Interests": ["Healthcare", "Research"],
+        //         "InternshipOverview": "Join our public health research team to analyze health data and contribute to key policy recommendations. This role involves data collection, statistical analysis, and report writing.",
+        //         "Duration": "6 months",
+        //         "Stipend": "₹15,000/month",
+        //         "Mode": "Offline"
+        //     },
+        //     {
+        //         "Internship ID": "INT1203",
+        //         "Sector": "Finance",
+        //         "Location": "Delhi",
+        //         "Education": "MBA",
+        //         "Skills": ["Finance", "Management", "Leadership"],
+        //         "Interests": ["Finance", "Startups"],
+        //         "InternshipOverview": "Work with our financial advisory team on market research, financial modeling, and client portfolio analysis. This is a great opportunity to gain hands-on experience in the financial sector.",
+        //         "Duration": "4 months",
+        //         "Stipend": "₹30,000/month",
+        //         "Mode": "Online"
+        //     },
+        //     {
+        //         "Internship ID": "INT1204",
+        //         "Sector": "Education",
+        //         "Location": "Chennai",
+        //         "Education": "PhD",
+        //         "Skills": ["Research", "Design Thinking"],
+        //         "Interests": ["Education"],
+        //         "InternshipOverview": "Contribute to a research project focused on innovative educational methodologies. Your work will help shape the future of government-supported e-learning platforms.",
+        //         "Duration": "12 months",
+        //         "Stipend": "₹40,000/month",
+        //         "Mode": "Hybrid"
+        //     },
+        //     {
+        //         "Internship ID": "INT1205",
+        //         "Sector": "Design",
+        //         "Location": "Jaipur",
+        //         "Education": "BA",
+        //         "Skills": ["Design Thinking", "Communication"],
+        //         "Interests": ["Design", "Startups"],
+        //         "InternshipOverview": "Work with our design team to create user-centric interfaces for government applications. You will be involved in the entire design process, from ideation to implementation.",
+        //         "Duration": "2 months",
+        //         "Stipend": "₹18,000/month",
+        //         "Mode": "Offline"
+        //     }
+        // ];
+
+        window.onload = function () {
+    const stored = JSON.parse(localStorage.getItem("recommendations"));
+const data = stored.Recommended_Internships;
+displayRecommendations(data);
+
+
+};
+
+
+        // Function to create and display a single internship card
+        // function createInternshipCard(internship) {
+        //     const card = document.createElement('div');
+        //     card.className = 'internship-card p-6 flex flex-col items-center text-center relative';
+
+        //     card.innerHTML = `
+        //         <div class="absolute top-2 right-2 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+        //             ID: ${internship['Internship ID']}
+        //         </div>
+        //         <h3 class="text-xl text-black font-bold mb-2">${internship['Sector']} Internship</h3>
+        //         <div class="text-sm text-gray-600 space-y-1 text-left w-full mt-8">
+        //             <p><strong><i class="fas fa-map-marker-alt text-[#4caf50] mr-2"></i>Location:</strong> ${internship['Location']}</p>
+        //             <p><strong><i class="fas fa-book text-[#4caf50] mr-2"></i>Education:</strong> ${internship['Education']}</p>
+        //             <p><strong><i class="fas fa-clock text-[#4caf50] mr-2"></i>Duration:</strong> ${internship['Duration']}</p>
+        //             <p><strong><i class="fas fa-rupee-sign text-[#4caf50] mr-2"></i>Stipend:</strong> ${internship['Stipend']}</p>
+        //             <p><strong><i class="fas fa-laptop text-[#4caf50] mr-2"></i>Mode:</strong> ${internship['Mode']}</p>
+        //         </div>
+        //         <button onclick="showOverview('${internship['InternshipOverview']}')" class="cta-button w-full mt-4 py-2 rounded-full font-semibold">
+        //             Overview
+        //         </button>
+        //     `;
+        //     return card;
+        // }
+
+        // // Function to show the modal with the internship overview
+        // function showOverview(overviewText) {
+        //     const modal = document.getElementById('overview-modal');
+        //     const content = document.getElementById('overview-content');
+        //     content.textContent = overviewText;
+        //     modal.classList.remove('hidden');
+        // }
+
+        // // Function to close the modal
+        // function closeModal() {
+        //     const modal = document.getElementById('overview-modal');
+        //     modal.classList.add('hidden');
+        // }
+
+        // // Function to display the recommendations
+        // function displayRecommendations(recommendations) {
+        //     const container = document.getElementById('internship-cards-container');
+        //     const noRecsMessage = document.getElementById('no-recommendations');
+        //     const accurateRecsButton = document.getElementById('getAccurateRecommendation');
+            
+        //     container.innerHTML = ''; // Clear previous cards
+
+        //     if (recommendations && recommendations.length > 0) {
+        //         noRecsMessage.classList.add('hidden');
+        //         recommendations.forEach(rec => {
+        //             const card = createInternshipCard(rec);
+        //             container.appendChild(card);
+        //         });
+        //         accurateRecsButton.classList.remove('hidden');
+        //     } else {
+        //         noRecsMessage.classList.remove('hidden');
+        //         accurateRecsButton.classList.add('hidden');
+        //     }
+        // }
+
+        // document.getElementById('getAccurateRecommendation').addEventListener('click', function() {
+        //     console.log("Get Accurate Recommendation button clicked. Input data will be sent to the second ML model.");
+        //     // Here you would send the previous form data and the top 5 recommendations
+        //     // to your second model for the next step.
+        // });
+
+        function createInternshipCard(internship) {
+    const card = document.createElement("div");
+    card.className = "internship-card p-6 flex flex-col items-center text-center relative";
+
+    card.innerHTML = `
+        <div class="absolute top-2 right-2 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+            ID: ${internship.InternshipID}
+        </div>
+        <h3 class="text-xl text-black font-bold mb-2">${internship.Sector} Internship</h3>
+        <div class="text-sm text-gray-600 space-y-1 text-left w-full mt-8">
+            <p><strong>Location:</strong> ${internship.Location}</p>
+            <p><strong>Education:</strong> ${internship.Education}</p>
+            <p><strong>Stipend:</strong> ₹${internship.Stipend}</p>
+            <p><strong>Mode:</strong> ${internship.Mode}</p>
+        </div>
+        <button onclick="showOverview('${internship.InternshipOverview}')" class="cta-button w-full mt-4 py-2 rounded-full font-semibold">
+            Overview
+        </button>
+    `;
+    return card;
+}
+
+function showOverview(text) {
+    document.getElementById("overview-content").innerText = text;
+    document.getElementById("overview-modal").classList.remove("hidden");
+}
+
+function closeModal() {
+    document.getElementById("overview-modal").classList.add("hidden");
+}
+
+function displayRecommendations(list) {
+    const container = document.getElementById("internship-cards-container");
+    const noRecs = document.getElementById("no-recommendations");
+
+    container.innerHTML = "";
+
+    if (!list || list.length === 0) {
+        noRecs.classList.remove("hidden");
+        return;
+    }
+
+    noRecs.classList.add("hidden");
+
+    list.forEach(item => {
+        const card = createInternshipCard(item);
+        container.appendChild(card);
+    });
+    document.getElementById("getAccurateRecommendation").classList.remove("hidden");
+
+// document.getElementById("getAccurateRecommendation").addEventListener("click", () => {
+//     const recommendations = JSON.parse(localStorage.getItem("recommendations"));
+//     const user = JSON.parse(localStorage.getItem("user_profile"));
+
+//     fetch("http://127.0.0.1:8000/accurate", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//             user: user,
+//             recommendations: recommendations.Recommended_Internships
+//         })
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         localStorage.setItem("best", JSON.stringify(data));
+//         window.location.href = "accurate_recommendation.html";
+//     });
+// });
+document.getElementById("getAccurateRecommendation").addEventListener("click", () => {
+    const recommendations = JSON.parse(localStorage.getItem("recommendations"));
+    const user = JSON.parse(localStorage.getItem("user_profile")) || {skills:[], interests:[]};
+
+    fetch("http://127.0.0.1:8000/accurate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user: user,
+            recommendations: recommendations.Recommended_Internships
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        localStorage.setItem("best", JSON.stringify(data));
+        window.location.href = "accurate_recommendation.html";
+    });
+});
+
+
+
+
+}
+
+        
+    </script>
+</body>
+</html>

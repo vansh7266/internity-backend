@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accurate Recommendation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #636FFF 100%);
+            color: #1b5e20;
+        }
+
+        .outer-box {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            color: #4a5568;
+        }
+
+        .internship-card {
+            background: linear-gradient(135deg, #cce0cc, #ffffff);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: #1b5e20;
+        }
+
+        .internship-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .cta-button {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="outer-box w-full max-w-2xl p-8 md:p-10 text-center relative">
+        
+        <!-- Back Button -->
+        <a href="./get_recommendation.html" class="absolute top-6 left-6 text-gray-500 hover:text-[#4caf50] transition-colors duration-200">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900 mb-2">
+                Your Top Recommended Internship
+            </h1>
+            <p class="text-lg text-gray-700">
+                This is the best match based on your profile and skills.
+            </p>
+        </div>
+
+        <!-- Internship Card -->
+        <div class="internship-card p-6 flex flex-col items-center text-center relative w-full">
+            <div class="absolute top-2 right-2 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+                ID: INT1201
+            </div>
+            <h3 class="text-xl text-black font-bold mb-2">Technology Internship</h3>
+            <div class="text-sm text-gray-600 space-y-1 text-left w-full mt-8">
+                <p><strong><i class="fas fa-map-marker-alt text-[#4caf50] mr-2"></i>Location:</strong> Bengaluru</p>
+                <p><strong><i class="fas fa-book text-[#4caf50] mr-2"></i>Education:</strong> BTech</p>
+                <p><strong><i class="fas fa-clock text-[#4caf50] mr-2"></i>Duration:</strong> 3 months</p>
+                <p><strong><i class="fas fa-rupee-sign text-[#4caf50] mr-2"></i>Stipend:</strong> ₹25,000/month</p>
+                <p><strong><i class="fas fa-laptop text-[#4caf50] mr-2"></i>Mode:</strong> Hybrid</p>
+            </div>
+            <button onclick="showOverview('This internship focuses on developing and deploying machine learning models for a large-scale data platform. You will work with a team of data scientists and engineers to build solutions that impact thousands of users.')" class="cta-button w-full mt-4 py-2 rounded-full font-semibold">
+                Overview
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for Internship Overview -->
+    <div id="overview-modal" class="hidden modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Internship Overview</h2>
+            <p id="overview-content" class="text-gray-700 text-left"></p>
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Function to show the modal with the internship overview
+        function showOverview(overviewText) {
+            const modal = document.getElementById('overview-modal');
+            const content = document.getElementById('overview-content');
+            content.textContent = overviewText;
+            modal.classList.remove('hidden');
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('overview-modal');
+            modal.classList.add('hidden');
+        }
+
+        window.onload = function () {
+    const best = JSON.parse(localStorage.getItem("best"));
+
+    if (!best || !best.Best_Internship) return;
+
+    const b = best.Best_Internship;
+
+    document.querySelector(".internship-card").innerHTML = `
+        <div class="absolute top-2 right-2 bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+            ID: ${b.InternshipID}
+        </div>
+        <h3 class="text-xl text-black font-bold mb-2">${b.Sector} Internship</h3>
+        <div class="text-sm text-gray-600 space-y-1 text-left w-full mt-8">
+            <p><strong>Location:</strong> ${b.Location}</p>
+            <p><strong>Education:</strong> ${b.Education}</p>
+            <p><strong>Stipend:</strong> ₹${b.Stipend}</p>
+            <p><strong>Mode:</strong> ${b.Mode}</p>
+        </div>
+        <button onclick="showOverview('${b.InternshipOverview}')" class="cta-button w-full mt-4 py-2 rounded-full font-semibold">
+            Overview
+        </button>
+    `;
+};
+
+    </script>
+</body>
+</html>

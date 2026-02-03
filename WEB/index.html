@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%,#636FFF 100%);
+            color: #1b5e20;
+            overflow-x: hidden;
+        }
+
+        .glass-container {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card-shadow:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-link {
+            transition: color 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+         @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-fade-in-down {
+            animation: fadeInDown 1s ease-out forwards;
+        }
+
+        .animate-fade-in-right {
+            animation: fadeInRight 1s ease-out forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .floating-image {
+            animation: float 4s ease-in-out infinite;
+        }
+        .real-shadow {
+            filter: drop-shadow(0 20px 10px rgba(0, 0, 0, 0.25));
+        }
+
+        /* Custom SVG for illustration, similar to the provided image */
+        .svg-illustration {
+            width: 100%;
+            height: auto;
+            max-width: 500px;
+        }
+        
+    </style>
+</head>
+<body class="flex flex-col min-h-screen p-4 md:p-8">
+
+    <!-- Header / Navbar -->
+    <header class="w-full h-[70px] max-w-7xl mx-auto flex justify-between items-center p-4 md:p-6 glass-container animate-fade-in-down" style="animation-delay: 0.2s;">
+        <div class="flex items-center space-x-2">
+            <!-- Simple government-like icon/logo -->
+            <svg class="h-8 w-8 text-[#4CAF50]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7v10l10 5 10-5V7L12 2zM12 4.47L18.09 7.74 12 11 5.91 7.74 12 4.47zM4 9.17l6 3.16v6.17l-6-3.17V9.17zM14 18.5V12.33l6-3.16v6.17l-6 3.16z"/>
+            </svg>
+            <h1 class="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900">Internity</h1>
+        </div>
+        
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex gap-16 text-gray-700 font-medium">
+            <a href="#" class="nav-link hover:text-[#4caf50]">About</a>
+            <a href="#" class="nav-link hover:text-[#4caf50]">Explore</a>
+            <a href="#" class="nav-link hover:text-[#4caf50]">Find your Internship</a>
+            <a href="#" class="nav-link hover:text-[#4caf50]">Explore InterAI</a>
+            <a href="#" class="nav-link hover:text-[#4caf50]">Contact</a>
+        </nav>
+
+        <!-- Get Started Button -->
+        <a href="./login_signin.html" class="py-2 px-6 rounded-full font-semibold cta-button animate-pulse hidden md:block" style="animation-delay: 1.5s;">
+            Get Started
+        </a>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between flex-1 mt-8 md:mt-16 space-y-10 md:space-y-0 md:space-x-10">
+        
+        <!-- Left Text Content -->
+        <section class="w-full md:w-1/2 text-center md:text-left space-y-6 animate-fade-in-down" style="animation-delay: 0.5s;">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-[#1b5e20] leading-tight">
+                Unlock Your Potential with <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900">Government Internships</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600">
+                Internity offers a platform to find government internships, explore AI roadmaps, and prepare for your future career.
+            </p>
+            <a href="#" class="inline-block py-3 px-8 rounded-full font-bold cta-button text-lg mt-4 animate-pulse">
+                Get Started
+            </a>
+        </section>
+
+        <!-- Right Illustration/Image Section -->
+        <section class="w-full md:w-1/2 flex justify-center animate-fade-in-right" style="animation-delay: 1s;">
+            <!-- This SVG is a placeholder for the illustration, stylistically similar to the one in the image -->
+          
+  <img src="./ChatGPT Image Sep 16, 2025 at 09_55_05 PM.png" class="max-w-full h-auto floating-image real-shadow"> 
+    
+
+
+           
+            
+
+        </section>
+
+    </main>
+    
+    <!-- Footer Section -->
+    <footer class="w-full max-w-7xl mx-auto mt-auto py-6 text-center text-gray-500 text-sm">
+        <p>A Government of India Initiative</p>
+    </footer>
+
+</body>
+</html>

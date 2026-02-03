@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internity Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #636FFF 100%);
+            color: #1b5e20;
+        }
+
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    
+<div class="flex items-center justify-center min-h-screen p-4">
+    
+    <div class="glass-card w-full max-w-md p-8 md:p-10 text-center">
+        <a href="./index.html" class="absolute top-6 left-6 text-gray-500 hover:text-[#4caf50] transition-colors duration-200">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+        <!-- Logo and Title -->
+        <div class="flex items-center justify-center space-x-2 mb-4">
+            <svg class="h-10 w-auto text-[#4CAF50]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7v10l10 5 10-5V7L12 2zM12 4.47L18.09 7.74 12 11 5.91 7.74 12 4.47zM4 9.17l6 3.16v6.17l-6-3.17V9.17zM14 18.5V12.33l6-3.16v6.17l-6 3.16z"/>
+            </svg>
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900">
+                Internity
+            </h1>
+        </div>
+
+        <!-- Motivational Text -->
+        <p class="text-lg text-gray-700 mb-8">
+            Your journey to a meaningful career, powered by government internships, begins here.
+        </p>
+
+        <!-- Tab Buttons -->
+        <div class="flex p-1 bg-gray-200 rounded-full mb-8">
+            <button id="signInTab" class="tab-button flex-1 py-2 rounded-full font-semibold active">Sign In</button>
+            <button id="signUpTab" class="tab-button flex-1 py-2 rounded-full font-semibold">Sign Up</button>
+        </div>
+
+        <!-- Forms Container -->
+        <div id="formContainer">
+
+            <!-- Sign In Form -->
+            <form id="signInForm" class="tab-content space-y-6" onsubmit="handleSignIn(event)">
+                <input type="email" placeholder="Email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                <div class="relative w-full">
+                    <input type="password" id="signInPassword" placeholder="Password" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                    <button type="button" onclick="togglePasswordVisibility('signInPassword', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-full font-bold cta-button">Sign In</button>
+                <p id="signInError" class="text-red-600 text-sm mt-2 hidden"></p>
+
+            </form>
+
+            <!-- Sign Up Form (hidden by default) -->
+            <form id="signUpForm" class="tab-content space-y-6 hidden" onsubmit="handleSignUp(event)">
+                <input type="text" placeholder="Username" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                <input type="text" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                <input type="email" placeholder="Email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                <div class="relative w-full">
+                    <input type="password" id="signUpPassword" placeholder="Password" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4caf50] focus:ring-2 focus:ring-[#4caf50]" required>
+                    <button type="button" onclick="togglePasswordVisibility('signUpPassword', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                
+                <button type="submit" class="w-full py-3 rounded-full font-bold cta-button">Sign Up</button>
+                <p id="signUpError" class="text-red-600 text-sm mt-2 hidden"></p>
+            </form>
+
+        </div>
+
+        <!-- Terms and Services & Privacy Policy -->
+        <p class="mt-8 text-gray-500 text-sm">
+            By signing in, you agree to our <a href="#" class="text-[#4caf50] font-medium hover:underline">Terms of Service</a> and <a href="#" class="text-[#4caf50] font-medium hover:underline">Privacy Policy</a>.
+        </p>
+    </div>
+
+
+
+    <!-- 🔥 FIREBASE SETUP (UPDATED) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // 👉 REPLACE with your Firebase Web Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCV0Q44o0zQNObBrDChjwF9jsvAHQvOYCw",
+    authDomain: "internity-backend.firebaseapp.com",
+    projectId: "internity-backend"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.firebaseAuth = auth;
+  window.createUser = createUserWithEmailAndPassword;
+  window.signInUser = signInWithEmailAndPassword;
+</script>
+
+
+    <script>
+        const signInTab = document.getElementById('signInTab');
+        const signUpTab = document.getElementById('signUpTab');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+
+        function showSignIn() {
+            signInTab.classList.add('active');
+            signUpTab.classList.remove('active');
+            signInForm.classList.remove('hidden');
+            signUpForm.classList.add('hidden');
+        }
+
+        function showSignUp() {
+            signUpTab.classList.add('active');
+            signInTab.classList.remove('active');
+            signUpForm.classList.remove('hidden');
+            signInForm.classList.add('hidden');
+        }
+
+        function togglePasswordVisibility(inputId, button) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+
+
+        async function handleSignIn(event) {
+    event.preventDefault();
+    const email = document.querySelector("#signInForm input").value;
+    const password = document.getElementById("signInPassword").value;
+
+    try {
+        const result = await signInUser(firebaseAuth, email, password);
+        const token = await result.user.getIdToken();
+
+        await fetch("http://127.0.0.1:8000/protected", {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        window.location.href = "./home_page.html";
+
+    } catch (e) {
+    const errBox = document.getElementById("signInError");
+    errBox.classList.remove("hidden");
+
+    if (e.code === "auth/user-not-found") {
+        errBox.innerText = "No account found with this email.";
+    } else if (e.code === "auth/wrong-password") {
+        errBox.innerText = "Incorrect password.";
+    } else {
+        errBox.innerText = "Login failed. Try again.";
+    }
+}
+
+}
+
+async function handleSignUp(event) {
+    event.preventDefault();
+    const email = document.querySelector("#signUpForm input[type='email']").value;
+    const password = document.getElementById("signUpPassword").value;
+
+    try {
+        const result = await createUser(firebaseAuth, email, password);
+        const token = await result.user.getIdToken();
+
+        await fetch("http://127.0.0.1:8000/protected", {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        showSignIn();
+
+    } catch (e) {
+    const errBox = document.getElementById("signUpError");
+    errBox.classList.remove("hidden");
+
+    if (e.code === "auth/email-already-in-use") {
+        errBox.innerText = "Email already registered. Please sign in.";
+    } else if (e.code === "auth/weak-password") {
+        errBox.innerText = "Password must be at least 6 characters.";
+    } else {
+        errBox.innerText = "Signup failed. Try again.";
+    }
+}
+
+}
+
+
+
+        signInTab.addEventListener('click', showSignIn);
+        signUpTab.addEventListener('click', showSignUp);
+
+        
+        showSignIn();
+    </script>
+</div>
+</body>
+</html>

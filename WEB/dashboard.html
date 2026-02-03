@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #636FFF 100%);
+            color: #1b5e20;
+        }
+
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .glass-section {
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .glass-section:hover {
+            transform: translateY(-5px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #636FFF, #4caf50);
+            transition: width 1s ease-out; /* Animation for the progress bar */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center p-4 min-h-screen">
+    
+    
+    <!-- Main Dashboard Container -->
+    <div class="glass-card w-full max-w-7xl p-8 md:p-10 text-center relative mt-8">
+        <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900 mb-2">
+            Student Dashboard
+        </h1>
+        <p class="text-lg text-gray-700 mb-8">
+            Your journey, powered by government internships.
+        </p>
+        <a href="./home_page.html" class="absolute top-6 left-6 text-gray-500 hover:text-[#4caf50] transition-colors duration-200">
+            <i class="fas fa-arrow-left fa-lg"></i>
+        </a>
+
+        <!-- Main Grid for Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Current Internship Section -->
+            <div class="glass-section p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Current Internship</h2>
+                <div class="space-y-4">
+                    <p class="text-lg font-medium">Role: <span class="text-[#4caf50]">Web Development Intern</span></p>
+                    <p class="text-lg font-medium">Company: <span class="text-[#4caf50]">Ministry of Technology</span></p>
+                    <p class="text-lg font-medium">Stipend: <span class="text-[#4caf50]">₹15,000/month</span></p>
+                    <p class="text-lg font-medium">Duration: <span class="text-[#4caf50]">90 days</span></p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-4">
+                        <label class="block text-md font-semibold text-gray-700 mb-2">Internship Progress</label>
+                        <div class="progress-bar h-4">
+                            <div class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1"><span id="days-completed">0</span> days completed / <span id="days-left">0</span> days left</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Internship History Section -->
+            <div class="glass-section p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Internship History</h2>
+                <div class="space-y-4 text-left">
+                    <p class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900 mb-2" id="completed-internships">2</p>
+                    <p class="text-lg font-medium text-gray-700">Internships Completed</p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-1 mt-4">
+                        <li>AI & ML Research (60 days)</li>
+                        <li>Data Analysis (90 days)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Stipend Tracker Section -->
+            <div class="glass-section p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Stipend Tracker</h2>
+                <div class="space-y-4 text-left">
+                    <p class="text-lg font-medium">Total Stipend Earned: <span class="text-[#4caf50]">₹30,000</span></p>
+                    <div class="mt-4 p-4 rounded-xl" id="stipend-status-card">
+                        <p class="font-bold text-lg" id="stipend-status">Payment Status: <span class="text-yellow-600">Pending</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Hours Graph Section -->
+            <div class="glass-section p-6 lg:col-span-2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Daily Work Hours</h2>
+                <img src="https://placehold.co/1000x400/D4F1D4/1B5E20?text=Daily+Work+Hours+Graph" alt="Daily Work Hours Graph" class="w-full h-auto rounded-lg">
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="glass-section p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Feedback from Provider</h2>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-xl bg-green-50/50 border border-green-100 shadow-sm">
+                        <p class="text-gray-700 italic">"Jane has demonstrated exceptional problem-solving skills and a strong work ethic. She is a valuable asset to any team."</p>
+                        <p class="mt-2 font-semibold text-right text-gray-600">- Internship Provider</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-green-50/50 border border-green-100 shadow-sm">
+                        <p class="text-gray-700 italic">"Excellent communication and collaboration skills. A pleasure to work with!"</p>
+                        <p class="mt-2 font-semibold text-right text-gray-600">- Project Lead</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-green-50/50 border border-green-100 shadow-sm">
+                        <p class="text-gray-700 italic">"Consistently delivers high-quality work on time. A very reliable intern."</p>
+                        <p class="mt-2 font-semibold text-right text-gray-600">- Team Manager</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Dummy Data (Replace with your backend data)
+        const internshipData = {
+            role: "Web Development Intern",
+            company: "Ministry of Technology",
+            stipend: 15000,
+            duration: 90,
+            daysCompleted: 35,
+            completedInternships: 2,
+            stipendStatus: "pending", // "processed" or "pending"
+            workHours: [5, 6, 7, 8, 7, 9, 8] // Last 7 days
+        };
+
+        window.onload = function() {
+            // Update Internship Progress
+            const progress = (internshipData.daysCompleted / internshipData.duration) * 100;
+            
+            // Animate the progress bar on load
+            setTimeout(() => {
+                document.querySelector('.progress-fill').style.width = progress + '%';
+            }, 100);
+            
+            document.getElementById('days-completed').textContent = internshipData.daysCompleted;
+            document.getElementById('days-left').textContent = internshipData.duration - internshipData.daysCompleted;
+
+            // Update Stipend Status
+            const stipendStatusCard = document.getElementById('stipend-status-card');
+            const stipendStatusText = document.getElementById('stipend-status');
+            if (internshipData.stipendStatus === "processed") {
+                stipendStatusCard.classList.add('bg-green-100');
+                stipendStatusText.innerHTML = 'Payment Status: <span class="text-green-600">Processed</span>';
+            } else {
+                stipendStatusCard.classList.add('bg-yellow-100');
+                stipendStatusText.innerHTML = 'Payment Status: <span class="text-yellow-600">Pending</span>';
+            }
+        };
+    </script>
+</body>
+</html>

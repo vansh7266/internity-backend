@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder & Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2f1 0%, #636FFF 100%);
+            color: #1b5e20;
+        }
+        
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .cta-button {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(145deg, #4caf50, #2e7d32);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Custom file input styling */
+        .custom-file-input {
+            cursor: pointer;
+            background: linear-gradient(145deg, #e0f2f1, #c8e6c9);
+            color: #1b5e20;
+            border-radius: 9999px;
+            padding: 0.75rem 2rem;
+            display: inline-block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-file-input:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .custom-file-input input[type="file"] {
+            display: none;
+        }
+
+        /* Loading animation */
+        .loading-animation {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="glass-card w-full max-w-4xl p-8 md:p-10 text-center">
+        <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-900 mb-2">
+            AI Resume Tools
+        </h1>
+        <p class="text-lg text-gray-700 mb-8">
+            Create a perfect resume, or check your existing one for mistakes.
+        </p>
+
+        <!-- Tab Buttons -->
+        <div class="flex p-1 bg-gray-200 rounded-full mb-8">
+            <button id="checkerTab" class="tab-button flex-1 py-2 rounded-full font-semibold active">Resume Checker</button>
+            <button id="generatorTab" class="tab-button flex-1 py-2 rounded-full font-semibold">Resume Generator</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tabContent">
+            
+            <!-- Resume Checker Section -->
+            <div id="checkerSection" class="tab-content space-y-6">
+                <p class="text-md text-gray-600">
+                    Upload your resume below and let our AI check it for common mistakes.
+                </p>
+                
+                <div class="flex flex-col items-center space-y-4">
+                    <label for="resumeUpload" class="custom-file-input">
+                        <i class="fas fa-upload mr-2"></i>Choose File
+                        <input type="file" id="resumeUpload" accept=".pdf" class="w-full max-w-sm border border-gray-300 rounded-xl p-3">
+                    </label>
+                    <span id="fileName" class="text-sm text-gray-500">No file chosen</span>
+                    <button id="checkResumeBtn" class="py-3 px-8 rounded-full font-bold cta-button">
+                        <i class="fas fa-search-plus mr-2"></i>Check Resume
+                    </button>
+                </div>
+                
+                <!-- AI Feedback Section -->
+                <div id="feedbackResult" class="mt-8 text-left hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">AI Analysis Results:</h3>
+                    <ul id="mistakesList" class="space-y-2 list-disc list-inside text-gray-700"></ul>
+                </div>
+
+            </div>
+
+            <!-- Resume Generator Section -->
+            <div id="generatorSection" class="tab-content space-y-6 hidden text-left">
+                <p class="text-md text-gray-600">
+                    Enter your details below to generate a professional, structured resume.
+                </p>
+
+                <form id="resumeForm" class="space-y-6">
+                    <!-- Personal Info -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">Personal Information</label>
+                        <input type="text" id="fullName" placeholder="Full Name" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2" required>
+                        <input type="email" id="email" placeholder="Email" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2" required>
+                        <input type="tel" id="phone" placeholder="Phone" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300" required>
+                    </div>
+
+                    <!-- Professional Summary -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">Professional Summary</label>
+                        <textarea id="summary" rows="4" placeholder="Briefly describe your skills and career goals." class="input-field w-full px-4 py-3 rounded-xl border border-gray-300" required></textarea>
+                    </div>
+
+                    <!-- Education -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">Education</label>
+                        <div id="educationContainer" class="space-y-2">
+                             <div class="bg-gray-100 p-4 rounded-xl">
+                                <input type="text" placeholder="Degree" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2" required>
+                                <input type="text" placeholder="University" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2" required>
+                                <input type="text" placeholder="Year" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300" required>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Work Experience -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">Work Experience</label>
+                        <div id="experienceContainer" class="space-y-2">
+                            <div class="bg-gray-100 p-4 rounded-xl">
+                                <input type="text" placeholder="Job Title" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2">
+                                <input type="text" placeholder="Company" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2">
+                                <textarea placeholder="Responsibilities & Achievements" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 mb-2"></textarea>
+                                <input type="text" placeholder="Duration (e.g., Jan 2023 - Present)" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">Skills (Separate with commas)</label>
+                        <input type="text" id="skills" placeholder="e.g., Python, JavaScript, Data Analysis" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="generatePdfBtn" class="w-full py-3 rounded-full font-bold cta-button">
+                        <i class="fas fa-file-pdf mr-2"></i>Generate My Resume
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Key for Gemini API. Replace with your actual key.
+        const API_KEY = "AIzaSyB1ld3eOItpK67Qm64fEcz-1yAlbSGy4jc"; // PASTE YOUR GEMINI API KEY HERE
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+        
+        // Tab functionality
+        const checkerTab = document.getElementById('checkerTab');
+        const generatorTab = document.getElementById('generatorTab');
+        const checkerSection = document.getElementById('checkerSection');
+        const generatorSection = document.getElementById('generatorSection');
+
+        checkerTab.addEventListener('click', () => {
+            checkerTab.classList.add('active');
+            generatorTab.classList.remove('active');
+            checkerSection.classList.remove('hidden');
+            generatorSection.classList.add('hidden');
+        });
+
+        generatorTab.addEventListener('click', () => {
+            generatorTab.classList.add('active');
+            checkerTab.classList.remove('active');
+            generatorSection.classList.remove('hidden');
+            checkerSection.classList.add('hidden');
+        });
+
+        // Resume Checker Logic (using Gemini API)
+        const resumeUpload = document.getElementById('resumeUpload');
+        const fileNameSpan = document.getElementById('fileName');
+
+        resumeUpload.addEventListener('change', () => {
+            if (resumeUpload.files.length > 0) {
+                fileNameSpan.textContent = resumeUpload.files[0].name;
+            } else {
+                fileNameSpan.textContent = "No file chosen";
+            }
+        });
+
+        document.getElementById('checkResumeBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('resumeUpload');
+            const feedbackResult = document.getElementById('feedbackResult');
+            const mistakesList = document.getElementById('mistakesList');
+            const checkResumeBtn = document.getElementById('checkResumeBtn');
+            
+            if (fileInput.files.length === 0) {
+                alert("Please upload a resume first.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            // Change button to loading state
+            checkResumeBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin mr-2"></i> AI is Analyzing...';
+            checkResumeBtn.classList.add('loading-animation');
+            checkResumeBtn.disabled = true;
+
+            reader.onload = async (event) => {
+                const base64Data = btoa(event.target.result);
+
+                // Show loading state in feedback
+                feedbackResult.classList.remove('hidden');
+                mistakesList.innerHTML = '<li class="text-gray-500 italic">Analyzing your resume...</li>';
+
+                const prompt = `Act as a resume expert. Analyze the resume provided in the attached image for common mistakes. Provide a bulleted list of potential improvements and errors, focusing on formatting, missing information, and best practices. Respond only with the bulleted list. If you cannot extract the text, state that. Do not invent information.`;
+
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: file.type, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: {
+                        temperature: 0.2
+                    }
+                };
+                
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const aiResponseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (aiResponseText) {
+                        mistakesList.innerHTML = aiResponseText
+                            .split('*')
+                            .filter(line => line.trim())
+                            .map(line => `<li class="text-red-600 font-semibold"><i class="fas fa-exclamation-triangle mr-2"></i>${line.trim()}</li>`)
+                            .join('');
+                    } else {
+                        mistakesList.innerHTML = '<li class="text-gray-500">AI could not analyze the document. Please try again.</li>';
+                    }
+
+                } catch (error) {
+                    console.error('Error fetching API:', error);
+                    mistakesList.innerHTML = `<li class="text-red-600">Error: Failed to analyze the resume. Please check your API key and try again.</li>`;
+                } finally {
+                    checkResumeBtn.innerHTML = '<i class="fas fa-search-plus mr-2"></i>Check Resume';
+                    checkResumeBtn.classList.remove('loading-animation');
+                    checkResumeBtn.disabled = false;
+                }
+            };
+
+            reader.readAsBinaryString(file);
+        });
+
+        // Resume Generator Logic (PDF Generation)
+        document.getElementById('resumeForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Collect form data
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const summary = document.getElementById('summary').value;
+            const skills = document.getElementById('skills').value.split(',').map(s => s.trim());
+
+            // Get education details
+            const educationElements = document.querySelectorAll('#educationContainer > div');
+            const education = Array.from(educationElements).map(el => {
+                const inputs = el.querySelectorAll('input');
+                return {
+                    degree: inputs[0].value,
+                    university: inputs[1].value,
+                    year: inputs[2].value
+                };
+            });
+
+            // Get work experience details
+            const experienceElements = document.querySelectorAll('#experienceContainer > div');
+            const workExperience = Array.from(experienceElements).map(el => {
+                const inputs = el.querySelectorAll('input');
+                const textarea = el.querySelector('textarea');
+                return {
+                    jobTitle: inputs[0].value,
+                    company: inputs[1].value,
+                    responsibilities: textarea.value,
+                    duration: inputs[2].value
+                };
+            });
+            
+            // Generate PDF
+            const doc = new window.jspdf.jsPDF();
+            doc.setFontSize(22);
+            doc.text(fullName, 105, 20, null, null, 'center');
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`${email} | ${phone}`, 105, 25, null, null, 'center');
+
+            // Summary
+            doc.setTextColor(0);
+            doc.setFontSize(14);
+            doc.text('Professional Summary', 20, 40);
+            doc.setLineWidth(0.5);
+            doc.line(20, 42, 190, 42);
+            doc.setFontSize(12);
+            doc.text(summary, 20, 50, { maxWidth: 170 });
+
+            // Education
+            let y = 70;
+            doc.setFontSize(14);
+            doc.text('Education', 20, y);
+            doc.line(20, y + 2, 190, y + 2);
+            y += 10;
+            education.forEach(edu => {
+                doc.setFontSize(12);
+                doc.text(`${edu.degree} - ${edu.university}`, 20, y);
+                doc.text(edu.year, 190, y, null, null, 'right');
+                y += 7;
+            });
+            
+            // Work Experience
+            y += 10;
+            doc.setFontSize(14);
+            doc.text('Work Experience', 20, y);
+            doc.line(20, y + 2, 190, y + 2);
+            y += 10;
+            workExperience.forEach(exp => {
+                doc.setFontSize(12);
+                doc.text(`${exp.jobTitle} at ${exp.company}`, 20, y);
+                doc.text(exp.duration, 190, y, null, null, 'right');
+                y += 7;
+                doc.setFontSize(10);
+                doc.text(exp.responsibilities, 25, y, { maxWidth: 165 });
+                y += 15;
+            });
+
+            // Skills
+            y += 10;
+            doc.setFontSize(14);
+            doc.text('Skills', 20, y);
+            doc.line(20, y + 2, 190, y + 2);
+            y += 10;
+            doc.setFontSize(12);
+            doc.text(skills.join(', '), 20, y, { maxWidth: 170 });
+            
+            doc.save('resume.pdf');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
