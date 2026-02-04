@@ -1,11 +1,12 @@
 import firebase_admin
-from firebase_admin import credentials, auth
+from firebase_admin import credentials,auth
 
 
+firebase_path = "/etc/secrets/firebase.json"
 
-
-cred = credentials.Certificate("/Users/vanshgupta/Desktop/vansh/BACKEND/app/internity-backend-firebase-adminsdk-fbsvc-2c040a9c67.json")
+cred = credentials.Certificate(firebase_path)
 firebase_admin.initialize_app(cred)
+
 
 
 
