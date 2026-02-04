@@ -8,7 +8,9 @@ from ml_ai.accurate_recommender import recommend_best
 
 app = FastAPI()
 
-
+@app.get("/")
+def root():
+    return {"status": "Internity Backend Running 🚀"}
 
 # ALLOW BROWSER REQUESTS
 app.add_middleware(
