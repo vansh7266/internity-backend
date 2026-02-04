@@ -10,7 +10,7 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"status": "Internity Backend Running 🚀"}
+    return {"status": "Internity Backend Running"}
 
 # ALLOW BROWSER REQUESTS
 app.add_middleware(
