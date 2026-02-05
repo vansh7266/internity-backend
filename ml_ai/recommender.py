@@ -61,7 +61,8 @@ def recommend(data):
     ]
 
     if df2.empty:
-        return {"Recommended_Internships": []}
+        return {"recommendations": []}
+
 
     df3 = df2[['InternshipID','Skills','Interests','Stipend']]
 
@@ -99,9 +100,21 @@ def recommend(data):
 
     recommended_info_dict = recommended_full_info.to_dict(orient="records")
 
-    output_data = {
-        "Recommended_Internships": recommended_info_dict
-    }
+    if not recommended_info_dict:
+        recommended_info_dict = [{
+        "InternshipID": -1,
+        "Title": "AI / Data Science Intern",
+        "Organization": "Demo Organization",
+        "Location": "Delhi",
+        "Sector": "Technology",
+        "Mode": "Offline",
+        "Stipend": 0
+    }]
+    
 
-    # ✅ Only change → return instead of file
+
+    output_data = {
+    "recommendations": recommended_info_dict
+    }
     return output_data
+
