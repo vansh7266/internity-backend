@@ -3,8 +3,13 @@ import pandas as pd
 import ast
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import os
 
-df = pd.read_csv("ml_ai/dummy.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.join(BASE_DIR, "dummy.csv")
+
+df = pd.read_csv(CSV_PATH)
+
 
 def recommend_best(user_data, recommended_list):
     user_data = {

@@ -10,8 +10,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 warnings.filterwarnings('ignore')
 
-# ✅ Only change → relative path
-df = pd.read_csv("ml_ai/dummy.csv")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.join(BASE_DIR, "dummy.csv")
+
+df = pd.read_csv(CSV_PATH)
+
 
 #  This function replaces user.json input
 def recommend(data):
