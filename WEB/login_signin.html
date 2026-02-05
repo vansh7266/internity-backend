@@ -202,7 +202,7 @@
         const result = await signInUser(firebaseAuth, email, password);
         const token = await result.user.getIdToken();
 
-        await fetch("https://internity-backend.onrender.com/protected",{
+        await fetch("https://internity-backend.onrender.com",{
             headers: { Authorization: "Bearer " + token }
         });
 
