@@ -139,10 +139,14 @@
 
   // 👉 REPLACE with your Firebase Web Config
   const firebaseConfig = {
-    apiKey: "AIzaSyCV0Q44o0zQNObBrDChjwF9jsvAHQvOYCw",
-    authDomain: "internity-backend.firebaseapp.com",
-    projectId: "internity-backend"
-  };
+  apiKey: "AIzaSyCV0Q44o0zQNObBrDChjwF9jsvAHQvOYCw",
+  authDomain: "internity-backend.firebaseapp.com",
+  projectId: "internity-backend",
+  storageBucket: "internity-backend.firebasestorage.app",
+  messagingSenderId: "122759285356",
+  appId: "1:122759285356:web:239bded7f0d117dae2e649",
+  measurementId: "G-7TMYJXN5NW"
+};
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -198,7 +202,8 @@
         const result = await signInUser(firebaseAuth, email, password);
         const token = await result.user.getIdToken();
 
-        await fetch("http://127.0.0.1:8000/protected", {
+        await fetch("https://internity-backend.onrender.com/protected", 
+, {
             headers: { Authorization: "Bearer " + token }
         });
 
